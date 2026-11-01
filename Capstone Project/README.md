@@ -19,7 +19,7 @@ workflow write access. Never put the token in notebook source or a Git URL.
 
 Repository: https://github.com/ggajayant/maintenance-prediction
 
-Live Streamlit app: [https://maintenance-prediction-eb92oxtkmp7lsw8s3regyh.streamlit.app/](https://maintenance-prediction-eb92oxtkmp7lsw8s3regyh.streamlit.app/)
+Live Streamlit app: [https://maintenance-prediction-qmugu29g65zgsgrrdtjdgu.streamlit.app/](https://maintenance-prediction-qmugu29g65zgsgrrdtjdgu.streamlit.app/)
 
 Deployment details: branch `main`, app path `Capstone Project/app.py`, Python 3.11.
 The supplied app URL responds over HTTPS. Add a screenshot of the hosted app with a
@@ -41,3 +41,5 @@ GitHub authentication and upload cells. Upload removes the old requirements file
 beside the app, so Community Cloud can find the root copy. Reboot the app after
 upload succeeds. Keep the app path as `Capstone Project/app.py`; no model retraining
 is needed for this path fix.
+
+Screenshot evidence: `evidence/streamlit_sample.png` shows the hosted input screen. The prediction result is outside the captured area. A local check of the same six values returns class 1 with score 0.6621 for class 1.
