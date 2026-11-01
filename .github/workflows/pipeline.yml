@@ -1,0 +1,77 @@
+name: Predictive Maintenance Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Capstone Project/data/**'
+      - 'Capstone Project/scripts/data_register.py'
+      - 'Capstone Project/scripts/prep.py'
+      - 'Capstone Project/scripts/train.py'
+      - 'Capstone Project/requirements-training.txt'
+      - '.github/workflows/pipeline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  register-dataset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r 'Capstone Project/requirements-training.txt'
+      - run: python 'Capstone Project/scripts/data_register.py'
+
+  data-preparation:
+    needs: register-dataset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r 'Capstone Project/requirements-training.txt'
+      - run: python 'Capstone Project/scripts/prep.py'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: train-test-splits
+          path: 'Capstone Project/artifacts/splits/'
+          if-no-files-found: error
+
+  model-training:
+    needs: data-preparation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r 'Capstone Project/requirements-training.txt'
+      - uses: actions/download-artifact@v4
+        with:
+          name: train-test-splits
+          path: 'Capstone Project/artifacts/splits/'
+      - run: python 'Capstone Project/scripts/train.py'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: training-results
+          path: |
+            Capstone Project/artifacts/experiment_results.csv
+            Capstone Project/artifacts/performance_comparison.csv
+            Capstone Project/artifacts/mlflow.db
+            Capstone Project/artifacts/mlflow_artifacts/
+      - name: Commit the trained model
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'Capstone Project/artifacts/models/'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update trained model [skip ci]'
+            git push origin HEAD:main
+          fi
