@@ -9,6 +9,7 @@ on:
       - 'Capstone Project/scripts/prep.py'
       - 'Capstone Project/scripts/train.py'
       - 'Capstone Project/requirements-training.txt'
+      - 'requirements.txt'
       - '.github/workflows/pipeline.yml'
   workflow_dispatch:
 
